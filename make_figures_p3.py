@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# make_figures_p3.py -- figures for the transition-current paper. All plotted
-# quantities are recomputed here from first principles. Companion scripts:
-# paper3_milestones.py, lift_validation_v2.py, positivity_domain.py.
+
 import numpy as np, itertools
 import matplotlib
 matplotlib.use("Agg")
