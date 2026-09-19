@@ -1,34 +1,5 @@
 #!/usr/bin/env python3
-# ============================================================================
-# lift_validation.py
-#
-# Tests of the candidate "superpartner-pair" (lifted / inertial) relaxation
-# equations on the state complex:
-#
-#     du/dt   = - Q^T Jc
-#     dJc/dt  = - Jc/tau_c + Omega Js + Q u          (per edge, Bohr freq w_e)
-#     dJs/dt  = - Js/tau_c - Omega Jc
-#
-# with Q built from BARE second moments (no spectral density input).
-#
-# Claims tested:
-#  [A] Single-spin dephasing: the pair equation reproduces the EXACT Kubo
-#      lineshape in the motional-narrowing regime, captures the correct
-#      short-time (second-moment) behavior in the rigid regime where the
-#      Markov/Bloch prediction fails catastrophically, and converges to the
-#      exact Kubo result as the memory hierarchy (Mori/HEOM tower) is deepened.
-#      Tier N=1 of the exact hierarchy IS the pair equation.
-#  [B] Three-spin complex: the lift is (i) unconditionally stable
-#      (Lyapunov: dissipation lives only in the J sector), (ii) has the
-#      Gibbs/Witten vacuum (u,J)=(e^{-f},0) as exact stationary state,
-#      (iii) satisfies generalized detailed balance with parity
-#      (u even, Jc odd, Js even): E G E = G^T  (Onsager-Casimir),
-#      (iv) reduces by adiabatic elimination of J to the Markov generator
-#      with EMERGENT Bloembergen-Purcell-Pound rates
-#      w_e = Delta_e^2 * tau_c/(1+w_e^2 tau_c^2), and (v) departs from
-#      Bloch in the slow-bath regime with oscillatory (nutation-like)
-#      recovery that no T1 can reproduce.
-# ============================================================================
+
 import numpy as np
 import itertools
 
