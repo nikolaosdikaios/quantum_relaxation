@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# paper3_milestones.py (v2) -- corrected milestone computations for Paper III
+
 import numpy as np, itertools
 PASS = lambda ok: "PASS" if ok else "FAIL"
 
