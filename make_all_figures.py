@@ -1,26 +1,5 @@
 #!/usr/bin/env python3
-"""
-make_all_figures.py -- regenerate every figure in the manuscript.
 
-The figure-producing code is spread over four scripts because two of them
-also perform the fits whose results they plot. This script runs all of them
-in order and then audits the output.
-
-    Figure 1  fig_p3_framework       <- make_figures_p3.py
-    Figure 2  fig_p3_topology        <- make_topology_fig.py
-    Figure 3  nmrd_gd_dtpa_overlay   <- nmrd_gd_dtpa_overlay.py
-    Figure 4  fig_p3_validation      <- make_figures_p3.py
-    Figure 5  fig_p3_fit             <- fid_fit.py        (also runs the fit)
-    Figure 6  fig_p3_protocol        <- protocol_fit.py   (also runs the fit)
-
-Usage
-    python make_all_figures.py            regenerate everything, then audit
-    python make_all_figures.py --quiet    suppress the scripts' own output
-    python make_all_figures.py --no-audit skip the audit step
-
-Runtime is a few minutes: fid_fit.py and protocol_fit.py evaluate exact
-hierarchies on a parameter grid, which dominates the cost.
-"""
 import argparse
 import io
 import os
