@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-# lift_validation_v2.py -- incorporating referee-report upgrades:
-#   * dynamical edge variable renamed v_e (avoids J(w) spectral-density clash)
-#   * per-edge memory times tau_e (each channel its own bath correlation time)
-#   * positivity audit of the reduced population dynamics (known Born-level
-#     risk for non-Markovian kernels, flagged by neither report)
+
 import numpy as np, itertools
 PASS = lambda ok: "PASS" if ok else "FAIL"
 N = 3
