@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-# paper3_milestones.py -- positivity, Overhauser and transport computations
-# for the transition-current paper (infinite-temperature weights, beta -> 0)
+
 import numpy as np, itertools
 PASS = lambda ok: "PASS" if ok else "FAIL"
 
