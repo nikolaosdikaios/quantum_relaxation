@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-# lift_validation_v2.py -- structural checks with per-edge memory times:
-#   * per-edge memory times tau_e (each channel its own bath correlation time)
-#   * stability, Gibbs stationarity, parity identity, per-edge BPP emergence
-#   * positivity audit of the reduced population dynamics (a known risk of
-#     second-order non-Markovian kernels); infinite-temperature weights
+
 import numpy as np, itertools
 PASS = lambda ok: "PASS" if ok else "FAIL"
 N = 3
