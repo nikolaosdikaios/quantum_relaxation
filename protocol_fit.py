@@ -1,23 +1,5 @@
 #!/usr/bin/env python3
-# protocol_fit.py -- standard relaxation-characterization protocol with a held-out echo test
-#
-# DESIGN
-#   Truth: one spin coupled to two independent Ornstein-Uhlenbeck channels,
-#   transverse (drives T1 and the lifetime part of T2) and secular (drives
-#   pure dephasing), plus a Lorentzian static-offset distribution of width w_s
-#   (drives T2*). Exact dynamics from the two-noise Hermite tower (depth 8).
-#   Protocol at two fields: inversion recovery, FID, Hahn echoes. 1% noise.
-#
-#   Model A (Bloch): one constant per curve. T1 and T2* fitted per field
-#   (4 constants). T2 has NO prediction from {T1, T2*} in the Bloch language,
-#   only the textbook heuristics T2 = T2* or T2 = 2 T1, both evaluated.
-#
-#   Model B (transition-current description, hierarchy at depth NM = 6):
-#   four global microscopic parameters (D_perp, D_z, tau, w_s) fitted to
-#   IR + FID ONLY, echoes then PREDICTED with zero additional parameters.
-#
-#   Diffusion: the persistent-transport correction to Stejskal-Torrey at the
-#   second-cumulant level, MSD(t) = 2D[t - tau_D(1 - e^{-t/tau_D})].
+
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
