@@ -1,17 +1,5 @@
 #!/usr/bin/env python3
-# bloch_dictionary_check.py -- Appendix D (consistency with the Bloch constants).
-#
-# QUESTION
-#   Do the microscopic parameters numerically give the Bloch constants where
-#   Bloch is valid? Extract T1, T2, T2* and D from the kinetic DYNAMICS the
-#   way a spectrometer would (exponential fits to inversion recovery, to the
-#   free induction with and without static offsets, and the slope of the
-#   mean-square displacement), and compare with the closed-form dictionary
-#     1/T1  = 2 Dp^2 Jbar(w0),   1/T2 = Dz^2 Jbar(0) + Dp^2 Jbar(w0),
-#     1/T2* = 1/T2 + w_s,        D = D_in (long times),
-#   at two Kubo numbers. The residuals are the next-order adiabatic
-#   corrections and must shrink as kappa^2. Noise-free by design: this is a
-#   consistency check of the reduction, not an inference demonstration.
+
 import numpy as np
 
 PASS = lambda ok: "PASS" if ok else "FAIL"
