@@ -1,20 +1,5 @@
 #!/usr/bin/env python3
-"""
-hierarchy_checks.py -- beyond the pair: what closes the hierarchy exactly.
 
-[H1] A fluctuation built from M independent two-state (telegraph) fluctuators,
-     scaled to second moment Delta^2 and switching so that its correlation is
-     exp(-t/tau), has a stochastic Liouville ladder with couplings
-     Delta*sqrt((n+1)(1-n/M)) (Krawtchouk basis) that terminates at tier M.
-     Checked against the exact joint dynamics of the 2^M fluctuator states.
-     M = 1 is Anderson's two-state model: the pair is exact. M -> infinity
-     gives the Gaussian (Ornstein-Uhlenbeck) ladder with couplings sqrt(n+1).
-[H2] Rigid-lattice free-induction decay at kappa = 5 for several M.
-[H3] Low-field longitudinal recovery (benchmark of Section 6) for several M.
-[H4] Two-spin Overhauser transient: pair (tier 1) against the converged
-     Gaussian hierarchy and the exact dichotomous dynamics, with one
-     independent fluctuation per transition, infinite-temperature weights.
-"""
 import itertools, numpy as np, scipy.sparse as sps
 PASS = lambda ok: "PASS" if ok else "FAIL"
 zc = lambda y: int(np.sum(np.diff(np.sign(np.real(y) + 1e-15)) != 0))
