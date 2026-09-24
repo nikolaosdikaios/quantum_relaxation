@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-# make_topology_fig.py -- Figure 2 of the transition-current paper.
-# Panel (a): the two-spin state complex, currents on the edges, coloured by
-# coherence order. Panel (b): the 4x6 incidence matrix d^T (states x
-# transitions); its transpose d is the topological factor in Q. The continuity
-# law is du/dt = -Q^T v^c (dissipative component), as in Eq. (4).
+
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
