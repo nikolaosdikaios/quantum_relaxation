@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""
-figure_concept_audit.py -- checks that each figure panel is conceptually
-correct, that is, that the curves it draws actually have the properties the
-caption and the text claim for them. This is separate from the cosmetic
-audit in figure_audit.py: here the plotted arrays are re-derived and their
-qualitative features tested.
-"""
+
 import numpy as np
 import itertools
 
