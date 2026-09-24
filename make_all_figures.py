@@ -1,5 +1,26 @@
 #!/usr/bin/env python3
+"""
+make_all_figures.py -- regenerate every figure in the manuscript.
 
+The figure-producing code is spread over four scripts because two of them
+also perform the fits whose results they plot. This script runs all of them
+in order and then audits the output.
+
+    Figure 1  fig_p3_framework       <- make_figures_p3.py
+    Figure 2  fig_p3_topology        <- make_topology_fig.py
+    Figure 3  nmrd_gd_dtpa_overlay   <- nmrd_gd_dtpa_overlay.py
+    Figure 4  fig_p3_validation      <- make_figures_p3.py
+    Figure 5  fig_p3_fit             <- fid_fit.py        (also runs the fit)
+    Figure 6  fig_p3_protocol        <- protocol_fit.py   (also runs the fit)
+
+Usage
+    python make_all_figures.py            regenerate everything, then audit
+    python make_all_figures.py --quiet    suppress the scripts' own output
+    python make_all_figures.py --no-audit skip the audit step
+
+Runtime is a few minutes: fid_fit.py and protocol_fit.py evaluate exact
+hierarchies on a parameter grid, which dominates the cost.
+"""
 import argparse
 import io
 import os
@@ -18,7 +39,7 @@ JOBS = [
     ("nmrd_gd_dtpa_overlay.py", ["nmrd_gd_dtpa_overlay"],
      "Figure 3: measured Gd-DTPA dispersion overlay (fast)"),
     ("fid_fit.py", ["fig_p3_fit"],
-     "Figure 5: field-series fit (runs the fit, takes ~1-2 min)"),
+     "Figure 5: field-series fit (runs the fits, incl. the BPP baseline)"),
     ("protocol_fit.py", ["fig_p3_protocol"],
      "Figure 6: characterization protocol and held-out echoes (~2-4 min)"),
 ]
@@ -73,7 +94,7 @@ def main():
     if missing:
         print(f"\n{len(missing)} figure(s) missing. See the messages above.")
         return 1
-    print("\nAll five figures regenerated.")
+    print("\nAll six figures regenerated.")
 
     if not args.no_audit:
         print("\n" + "=" * 68)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+# paper3_milestones.py -- positivity, Overhauser and transport computations
+# for the transition-current paper (infinite-temperature weights, beta -> 0)
 import numpy as np, itertools
 PASS = lambda ok: "PASS" if ok else "FAIL"
 
@@ -73,7 +74,7 @@ for trial in range(200):
         worst_p=min(worst_p, ((1/np.sqrt(8))+u).min()*np.sqrt(8)/8*8)
 print("  l1-ball positivity (sum_A|m_A(0)|=1, 200 random states): min_t,i 8*p_i = %.4f  [%s]"
       %(worst_p, PASS(worst_p>-1e-9)))
-print("    -> theorem: positivity holds on the mode-l1 ball, which contains all")
+print("    -> theorem (beta = 0): positivity holds on the mode-l1 ball, which contains all")
 print("       conventional preparations; violations need near-pure-state initial data.")
 # ===================== [M2] two-spin Solomon with dynamical currents ========
 print("="*76); print("[M2] TWO-SPIN NOE WITH DYNAMICAL CURRENTS")

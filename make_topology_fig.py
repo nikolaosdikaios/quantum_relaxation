@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-
+# make_topology_fig.py -- Figure 2 of the transition-current paper.
+# Panel (a): the two-spin state complex, currents on the edges, coloured by
+# coherence order. Panel (b): the 4x6 incidence matrix d^T (states x
+# transitions); its transpose d is the topological factor in Q. The continuity
+# law is du/dt = -Q^T v^c (dissipative component), as in Eq. (4).
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -37,31 +41,32 @@ for p, q, lx, ly in ((UU, UD, 0.27, 0.73), (UU, DU, 0.73, 0.73),
                      (UD, DD, 0.27, 0.27), (DU, DD, 0.73, 0.27)):
     edge(p, q, CB); lab(lx, ly, r"$v_{\mathrm{sq}}$", CB)
 # zero-quantum flip-flop (green): horizontal, bows up
-edge(UD, DU, CG, rad=-0.30); lab(0.50, 0.635, r"$v_{\mathrm{zq}}$", CG)
-# double-quantum (red): vertical, bows right; label on lower arc, clear of box
-edge(UU, DD, CR, rad=0.32); lab(0.615, 0.265, r"$v_{\mathrm{dq}}$", CR)
+edge(UD, DU, CG, rad=-0.40); lab(0.40, 0.637, r"$v_{\mathrm{zq}}$", CG)
+# double-quantum (red): straight vertical edge, passing behind the central
+# box; label on its lower segment
+edge(UU, DD, CR); lab(0.50, 0.29, r"$v_{\mathrm{dq}}$", CR)
 
 # central continuity-law annotation (edges pass behind it)
-axa.add_patch(FancyBboxPatch((0.355, 0.435), 0.29, 0.105,
+axa.add_patch(FancyBboxPatch((0.325, 0.405), 0.35, 0.165,
               boxstyle="round,pad=0.008", fc="white", ec=CD, lw=1.2, zorder=3))
-axa.text(0.5, 0.507, r"$\partial_t u=-Q^{\top}v^{c}$", ha="center",
+axa.text(0.5, 0.522, r"$\partial_t u=-Q^{\top}v^{c}$", ha="center",
          va="center", fontsize=15, color=CD, zorder=4)
-axa.text(0.5, 0.462, "populations change only\nby current divergence",
-         ha="center", va="center", fontsize=8.8, color="#555555", zorder=4)
+axa.text(0.5, 0.445, "populations change only\nby current divergence",
+         ha="center", va="center", fontsize=9.5, color="#555555", zorder=4)
 
 for n, (x, y) in V.items():
-    axa.add_patch(plt.Circle((x, y), 0.052, fc="white", ec=CD, lw=1.8, zorder=5))
-    axa.text(x, y, n, ha="center", va="center", fontsize=12.5, zorder=6)
+    axa.text(x, y, n, ha="center", va="center", fontsize=12.5, zorder=6,
+             bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=CD, lw=1.8))
 
 for i, (txt, col) in enumerate((("double-quantum", CR),
                                 ("zero-quantum (flip-flop)", CG),
-                                ("single-quantum (observable)", CB))):
+                                ("single-quantum", CB))):
     yy = 0.055 + 0.052*i
     axa.plot([0.01, 0.065], [yy, yy], color=col, lw=3.2)
     axa.text(0.076, yy, txt, va="center", fontsize=9.6, color="#333333")
 
 # ============================ panel (b): incidence matrix ==================
-axb.set_title(r"(b)  incidence matrix $\mathrm{d}$: the topology inside $Q$",
+axb.set_title(r"(b)  incidence matrix $\mathrm{d}^{\top}$: the topology inside $Q$",
               fontsize=13, loc="left", color=CD)
 B = np.array([[-1, -1,  0,  0,  0, -1],
               [ 1,  0, -1,  0, -1,  0],

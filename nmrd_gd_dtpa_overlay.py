@@ -1,5 +1,32 @@
 #!/usr/bin/env python3
+"""
+nmrd_gd_dtpa_overlay.py
+-----------------------
+Qualitative confrontation of the transition-current spectral density with a
+measured 1H NMRD profile. The profile is the Gd-DTPA (4 mM) relaxivity
+dispersion from
 
+    Varga-Szemes A, Kiss P, Rab A, Suranyi P, Lenkey Z, Simor T, Bryant RG,
+    Elgavish GA, "In Vitro Longitudinal Relaxivity Profile of Gd(ABE-DTTA),
+    an Investigational MRI Contrast Agent", PLoS ONE 11(2): e0149260 (2016),
+    doi:10.1371/journal.pone.0149260 (open access, CC-BY; PMC4752229).
+    The Gd-DTPA (4 mM) reference curve is used here.
+
+The points below were read BY HAND from the published figure and are therefore
+approximate. For the manuscript, re-digitize the Gd-DTPA curve with
+WebPlotDigitizer and replace the arrays, then cite the source. This script is a
+template, not a source of record.
+
+Model. In the adiabatic (Markovian) limit the transition-current construction
+gives a relaxation rate that is a sum of Lorentzian spectral densities, one per
+memory channel,
+        r1(f) = c0 + sum_k  a_k / (1 + (2*pi*f*tau_k)^2),
+with a_k proportional to the coupling second moment Delta_omega_k^2 of channel k
+and tau_k its correlation time; c0 is a (nearly) field-independent baseline
+(outer-sphere / high-field contribution). We fit a single channel (one tau) and
+a two-channel version, and compare parameter counts against a per-field
+description.
+"""
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib
@@ -21,55 +48,78 @@ r1 = np.array([
 
 f = f_MHz * 1e6  # Hz
 
-def lor1(f, c0, a1, tau1):
-    return c0 + a1 / (1.0 + (2*np.pi*f*tau1)**2)
+# Correlation times are fitted in ns: with tau in seconds the Jacobian is badly
+# scaled and the optimizer can stop at its starting point.
+def lor1(f, c0, a1, tau1_ns):
+    return c0 + a1 / (1.0 + (2*np.pi*f*tau1_ns*1e-9)**2)
 
-def lor2(f, c0, a1, tau1, a2, tau2):
-    return (c0 + a1 / (1.0 + (2*np.pi*f*tau1)**2)
-               + a2 / (1.0 + (2*np.pi*f*tau2)**2))
+def lor2(f, c0, a1, tau1_ns, a2, tau2_ns):
+    return (c0 + a1 / (1.0 + (2*np.pi*f*tau1_ns*1e-9)**2)
+               + a2 / (1.0 + (2*np.pi*f*tau2_ns*1e-9)**2))
+
+def aic(rss, k):
+    n = len(f)
+    return n * np.log(rss / n) + 2 * k
 
 # ---- single-channel fit -----------------------------------------------------
-p1, _ = curve_fit(lor1, f, r1, p0=[3.0, 3.5, 12e-9],
-                  bounds=([0, 0, 1e-11], [10, 20, 1e-6]), maxfev=20000)
+p1, _ = curve_fit(lor1, f, r1, p0=[3.0, 3.5, 12.0],
+                  bounds=([0, 0, 0.01], [10, 20, 1e3]), maxfev=20000)
 res1 = r1 - lor1(f, *p1)
 rms1 = np.sqrt(np.mean(res1**2))
 
-# ---- two-channel fit --------------------------------------------------------
-p2, _ = curve_fit(lor2, f, r1, p0=[2.6, 3.0, 12e-9, 1.0, 1.0e-9],
-                  bounds=([0, 0, 1e-10, 0, 1e-11], [10, 20, 1e-6, 20, 1e-7]),
-                  maxfev=40000)
+# ---- two-channel fit: multi-start, since the second channel is weak ---------
+best = None
+for t2 in (0.05, 0.2, 0.5, 1.0, 2.0, 5.0, 30.0, 100.0, 300.0):
+    for a2 in (0.2, 0.5, 1.0):
+        try:
+            p, _ = curve_fit(lor2, f, r1,
+                             p0=[p1[0] - a2 / 2, p1[1], p1[2], a2, t2],
+                             bounds=([0, 0, 0.01, 0, 0.001],
+                                     [10, 20, 1e3, 20, 1e3]), maxfev=40000)
+        except RuntimeError:
+            continue
+        r = np.sum((r1 - lor2(f, *p))**2)
+        if best is None or r < best[0]:
+            best = (r, p)
+p2 = best[1]
 res2 = r1 - lor2(f, *p2)
 rms2 = np.sqrt(np.mean(res2**2))
+daic = aic(np.sum(res1**2), 3) - aic(np.sum(res2**2), 5)
 
 print("=== single channel (3 params: c0, a1, tau1) ===")
 print(f"  c0   = {p1[0]:.2f} s^-1 mM^-1")
 print(f"  a1   = {p1[1]:.2f} s^-1 mM^-1   (amplitude ~ Delta_omega^2)")
-print(f"  tau1 = {p1[2]*1e9:.2f} ns       (effective correlation time)")
+print(f"  tau1 = {p1[2]:.2f} ns       (effective, proton-frequency Lorentzian)")
+print(f"         = {p1[2]*1e3/658.21:.1f} ps if assigned to the electron Larmor frequency")
 print(f"  RMS residual = {rms1:.3f} s^-1 mM^-1  over {len(f)} fields")
 print("=== two channels (5 params) ===")
 print(f"  c0   = {p2[0]:.2f}")
-print(f"  a1,tau1 = {p2[1]:.2f}, {p2[2]*1e9:.2f} ns")
-print(f"  a2,tau2 = {p2[3]:.2f}, {p2[4]*1e9:.2f} ns")
+print(f"  a1,tau1 = {p2[1]:.2f}, {p2[2]:.2f} ns")
+print(f"  a2,tau2 = {p2[3]:.2f}, {p2[4]:.2f} ns")
 print(f"  RMS residual = {rms2:.3f} s^-1 mM^-1  over {len(f)} fields")
+print(f"  AIC(1 channel) - AIC(2 channels) = {daic:+.1f}")
 print(f"  (a per-field description would use {len(f)} independent rates.)")
 
 # ---- overlay figure ---------------------------------------------------------
 fg = np.logspace(np.log10(0.008), np.log10(1000), 600) * 1e6
 fig, ax = plt.subplots(figsize=(7.2, 5.0))
-ax.errorbar(f_MHz, r1, yerr=0.15, fmt='o', ms=6, mfc='white',
-            mec='#1E2A38', ecolor='#8899AA', capsize=2,
-            label='Gd-DTPA 4 mM (digitized, PLOS ONE 2016)', zorder=3)
+# no error bars: the source gives none for these points, and a fixed
+# +-0.15 would be an unstated assumption
+ax.plot(f_MHz, r1, 'o', ms=6, mfc='white', mec='#1E2A38',
+        label='Gd-DTPA 4 mM (digitized, PLOS ONE 2016)', zorder=3)
+GAMMA_S_OVER_I = 658.21   # electron / proton gyromagnetic ratio
 ax.plot(fg/1e6, lor1(fg, *p1), '-', color='#B5502A', lw=2.4,
-        label=(fr'transition-current fit: one channel, $\tau_c={p1[2]*1e9:.0f}$ ns'
-               '\n(3 parameters, RMS '
-               fr'${rms1:.2f}$ over {len(f)} fields)'))
+        label=(fr'adiabatic limit, one channel (3 parameters, RMS ${rms1:.2f}$)'
+               '\n'
+               fr'$\tau_{{\rm eff}}={p1[2]:.0f}$ ns in the proton frequency'
+               fr' ($\approx{p1[2]*1e3/GAMMA_S_OVER_I:.0f}$ ps at $\omega_S$)'))
 ax.set_xscale('log')
 ax.set_xlabel('Proton Larmor frequency (MHz)')
 ax.set_ylabel(r'Relaxivity $r_1$ (s$^{-1}$mM$^{-1}$)')
-ax.set_title('Transition-current spectral density vs a measured NMRD profile')
+ax.set_title('Adiabatic limit vs a measured Gd-DTPA dispersion')
 ax.set_xlim(0.008, 1000)
 ax.set_ylim(2, 7.5)
-ax.legend(frameon=False, fontsize=9.5, loc='upper right')
+ax.legend(frameon=False, fontsize=9.5, loc='lower left', labelspacing=0.9)
 ax.grid(True, which='both', alpha=0.15)
 fig.tight_layout()
 fig.savefig('nmrd_gd_dtpa_overlay.pdf')

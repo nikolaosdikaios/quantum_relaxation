@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
-
+# protocol_fit.py -- standard relaxation-characterization protocol with a held-out echo test
+#
+# DESIGN
+#   Truth: one spin coupled to two independent Ornstein-Uhlenbeck channels,
+#   transverse (drives T1 and the lifetime part of T2) and secular (drives
+#   pure dephasing), plus a Lorentzian static-offset distribution of width w_s
+#   (drives T2*). Exact dynamics from the two-noise Hermite tower (depth 8).
+#   Protocol at two fields: inversion recovery, FID, Hahn echoes. 1% noise.
+#
+#   Model A (Bloch): one constant per curve. T1 and T2* fitted per field
+#   (4 constants). T2 has NO prediction from {T1, T2*} in the Bloch language,
+#   only the textbook heuristics T2 = T2* or T2 = 2 T1, both evaluated.
+#
+#   Model B (transition-current description, hierarchy at depth NM = 6):
+#   four global microscopic parameters (D_perp, D_z, tau, w_s) fitted to
+#   IR + FID ONLY, echoes then PREDICTED with zero additional parameters.
+#
+#   Diffusion: the persistent-transport correction to Stejskal-Torrey at the
+#   second-cumulant level, MSD(t) = 2D[t - tau_D(1 - e^{-t/tau_D})].
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -93,7 +111,7 @@ print("  Bloch per-field constants (4 fitted): "
       + "  ".join(f"w0={w0}: 1/T1={bloch[w0]['R1']:.3f}, "
                   f"1/T2*={bloch[w0]['R2star']:.3f}" for w0 in fields))
 
-# ---------------- Model B: kinetic, 4 global primitives from IR+FID only ------
+# ---------------- Model B: 4 global microscopic parameters from IR+FID only --
 NM = 6    # model closure depth
 def kin_rss(p):
     Dx, Dz, tau, ws = p
@@ -120,7 +138,7 @@ for sweep in range(3):
     rng_scan = [(max(l, p[k] - 0.12), min(h, p[k] + 0.12))
                 for k, (l, h) in enumerate(rng_scan)]
 Dx_f, Dz_f, tau_f, ws_f = p
-print(f"  kinetic global primitives (4 fitted, IR+FID only): "
+print(f"  kinetic global parameters (4 fitted, IR+FID only): "
       f"D_perp={Dx_f:.3f}  D_z={Dz_f:.3f}  tau={tau_f:.3f}  w_s={ws_f:.3f}")
 
 # ---------------- held-out echo prediction -------------------------------------
@@ -167,7 +185,7 @@ for w0 in fields:
     axa.plot(t_ir * 0.32, ir_f, color=cols[w0], lw=1.8, ls=":",
              label=rf"IR (compressed), $\omega_0={w0}$")
 axa.set_title("(a)  fitted set: IR and FID, two fields,"
-              " four global primitives", fontsize=14, pad=9)
+              " four global parameters", fontsize=14, pad=9)
 axa.set_xlabel(r"$t\,\Delta\omega$  (IR axis compressed $\times0.32$)")
 axa.set_ylabel("signal"); axa.legend(fontsize=10.5, frameon=False)
 for w0 in fields:
@@ -183,7 +201,7 @@ for w0 in fields:
              lw=1.4, ls=":", alpha=0.7)
 axb.set_title("(b)  held out: echoes predicted with zero new parameters",
               fontsize=14, pad=9)
-axb.set_xlabel(r"echo time $2\tau_e\,\Delta\omega$")
+axb.set_xlabel(r"echo time $t_{\mathrm{E}}\,\Delta\omega$")
 axb.set_ylabel("echo amplitude")
 axb.legend(fontsize=10.5, frameon=False, loc="lower left",
            borderaxespad=0.7)

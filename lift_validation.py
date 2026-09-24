@@ -1,5 +1,37 @@
 #!/usr/bin/env python3
-
+# ============================================================================
+# lift_validation.py
+#
+# Tests of the candidate "superpartner-pair" (lifted / inertial) relaxation
+# equations on the state complex:
+#
+#     du/dt   = - Q^T Jc
+#     dJc/dt  = - Jc/tau_c + Omega Js + Q u          (per edge, Bohr freq w_e)
+#     dJs/dt  = - Js/tau_c - Omega Jc
+#
+# with Q built from BARE second moments (no spectral density input).
+#
+# Claims tested:
+#  [A] Single-spin dephasing: the pair equation reproduces the EXACT Kubo
+#      lineshape in the motional-narrowing regime, captures the correct
+#      short-time (second-moment) behavior in the rigid regime where the
+#      Markov/Bloch prediction fails catastrophically, and converges to the
+#      exact Kubo result as the memory hierarchy (Mori/HEOM tower) is deepened.
+#      Tier N=1 of the exact hierarchy IS the pair equation.
+#  [B] Three-spin complex: the lift is (i) unconditionally stable
+#      (Lyapunov: dissipation lives only in the J sector), (ii) has the
+#      Gibbs/Witten vacuum (u,J)=(e^{-f},0) as exact stationary state,
+#      (iii) satisfies generalized detailed balance with parity
+#      (u even, Jc odd, Js even): E G E = G^T  (Onsager-Casimir),
+#      (iv) reduces by adiabatic elimination of J to the Markov generator
+#      with EMERGENT Bloembergen-Purcell-Pound rates
+#      w_e = Delta_e^2 * tau_c/(1+w_e^2 tau_c^2), and (v) departs from
+#      Bloch in the slow-bath regime, where the pair (tier 1) rings.
+#  [C] Low-field benchmark against the Gaussian stochastic Liouville
+#      hierarchy: for Gaussian fluctuations the ringing of the pair is a
+#      truncation artifact (the pair is exact for one two-state fluctuator,
+#      see hierarchy_checks.py); the converged recovery is non-exponential.
+# ============================================================================
 import numpy as np
 import itertools
 
@@ -169,12 +201,76 @@ for tc_, osc_, T_, dt_, label in (
         print(f"    [{PASS(dev < 0.05)}]  lift reproduces Bloch when "
               f"Delta*tau_c, omega*tau_c are small")
     else:
-        print(f"    [{PASS(dev > 0.3 and n_cross >= 1)}]  oscillatory "
-              f"(nutation-like) recovery: no single T1 can fit this")
+        print("    the tier-1 pair departs from Bloch and rings here;"
+              " section [C] compares it with higher tiers")
+
+# ============================================================================
+# [C] Low-field benchmark: pair (tier 1) vs the stochastic Liouville hierarchy
+# ============================================================================
+print("=" * 76)
+print("[C] LOW-FIELD RECOVERY: pair (tier 1) vs stochastic Liouville hierarchy")
+# With infinite-temperature weights and per-axis parameters the spin-flip
+# symmetry decouples the three-spin lift into Walsh sectors. The sector of
+# spin 1 is one spin with Delta^2 = Dsq[0], Bohr frequency osc*omg[0] and
+# memory tc. Its microscopic model is a spin in a static field along z and an
+# Ornstein-Uhlenbeck field along x with second moment 2*Dsq[0]. The SLE ladder
+# below is exact for that model as N -> infinity, and its tier 1 is the pair.
+Rz = np.array([[0., -1, 0], [1, 0, 0], [0, 0, 0]])
+Rx = np.array([[0., 0, 0], [0, 0, -1], [0, 1, 0]])
+
+def sle_mz(Delta, tau, w0, N, t):
+    d = 3 * (N + 1); A = np.zeros((d, d))
+    for n in range(N + 1):
+        A[3*n:3*n+3, 3*n:3*n+3] = w0 * Rz - (n / tau) * np.eye(3)
+        if n < N:
+            A[3*n:3*n+3, 3*(n+1):3*(n+1)+3] = Delta * np.sqrt(n + 1) * Rx
+            A[3*(n+1):3*(n+1)+3, 3*n:3*n+3] = Delta * np.sqrt(n + 1) * Rx
+    w, V = np.linalg.eig(A); c = np.linalg.solve(V, np.eye(d)[:, 2])
+    return np.real((V[2, :] * c) @ np.exp(np.outer(w, t)))
+
+def zero_crossings(y):
+    return int(np.sum(np.diff(np.sign(y + 1e-15)) != 0))
+
+tcL, oscL = 2.0, 0.08
+tL = np.linspace(0, 25.0, 5001)
+GL = lift_generator(tcL, oscL)
+wL, VL = np.linalg.eig(GL)
+x0 = np.zeros(32); x0[0:8] = Z1
+cL = np.linalg.solve(VL, x0)
+m_pair = np.real(((Z1 @ VL[0:8, :]) * cL) @ np.exp(np.outer(wL, tL)))
+w0L, DeltaL = oscL * omg[0], np.sqrt(2 * Dsq[0])
+sle = {N: sle_mz(DeltaL, tcL, w0L, N, tL) for N in (1, 2, 4, 8, 16, 32)}
+d1 = np.abs(sle[1] - m_pair).max()
+print(f"  benchmark: kappa = {np.sqrt(Dsq[0]) * tcL:.2f}, mu = {w0L * tcL:.2f},"
+      f" infinite-temperature weights")
+print(f"  max|SLE tier 1 - three-spin pair, sector of spin 1| = {d1:.1e}"
+      f"   [{PASS(d1 < 1e-8)}]")
+print(f"  tier 1 (= pair): zero crossings = {zero_crossings(sle[1])}")
+zc = [zero_crossings(sle[N]) for N in (2, 4, 8, 16, 32)]
+print(f"  zero crossings at tiers 2, 4, 8, 16, 32: {zc}")
+print(f"  tiers 2-32: max zero crossings = {max(zc)}   [{PASS(max(zc) == 0)}]")
+conv = np.abs(sle[32] - sle[16]).max()
+mono = bool(np.all(np.diff(sle[32]) <= 1e-12))
+print(f"  convergence max|tier 32 - tier 16| = {conv:.1e}, converged recovery"
+      f" monotonic: {mono}   [{PASS(conv < 1e-3 and mono)}]")
+rates = np.linspace(0.1, 2.0, 1901)
+r_best = rates[int(np.argmin([np.sum((sle[32] - np.exp(-r * tL)) ** 2)
+                              for r in rates]))]
+dev_best = np.abs(sle[32] - np.exp(-r_best * tL)).max()
+r_bpp = DeltaL ** 2 * tcL / (1 + (w0L * tcL) ** 2)
+dev_bpp = np.abs(sle[32] - np.exp(-r_bpp * tL)).max()
+dev_pair = np.abs(sle[32] - sle[1]).max()
+print(f"  best single exponential (rate {r_best:.3f}): max deviation {dev_best:.3f}")
+print(f"  Markovian BPP exponential (rate {r_bpp:.3f}): max deviation {dev_bpp:.3f}")
+print(f"  pair (tier 1): max deviation from converged {dev_pair:.3f}")
+print("  -> for Gaussian fluctuations the ringing of the pair is a truncation")
+print("     artifact; for one two-state fluctuator the pair is exact and the")
+print("     ringing physical (hierarchy_checks.py). No single T1 fits either.")
 
 print("=" * 76)
-print("SUMMARY: the pair/lift equations are stable, thermodynamically exact")
-print("(Gibbs vacuum, parity detailed balance), reduce to Bloch with emergent")
-print("BPP rates when the superpartner is fast, reproduce exact Kubo physics")
-print("at tier 1 of the Mori hierarchy, and predict inertial ringing that the")
-print("Bloch parametrization cannot express.")
+print("SUMMARY: the pair equations are stable, keep the Gibbs state stationary,")
+print("satisfy the parity identity, and reduce to Bloch with emergent BPP rates")
+print("when the currents are fast. For OU dephasing the pair is tier 1 of the")
+print("hierarchy, which converges to the exact Kubo decay. In the slow-bath,")
+print("low-field regime the pair rings, exactly so for one two-state")
+print("fluctuator; for Gaussian fluctuations the recovery is non-exponential.")

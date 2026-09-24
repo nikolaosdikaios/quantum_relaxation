@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-
+# make_figures_p3.py -- Figures 1 (framework) and 4 (reductions and
+# predictions) of the transition-current paper. All plotted quantities are
+# recomputed here from first principles. Companion scripts:
+# paper3_milestones.py, lift_validation.py, lift_validation_v2.py,
+# positivity_domain.py.
 import numpy as np, itertools
 import matplotlib
 matplotlib.use("Agg")
@@ -85,20 +89,21 @@ ax.text(0.5, 0.673,
         ha="center", fontsize=11.6, color="#D8E2EE")
 
 # ---- microscopic parameters -------------------------------------------------
-ax.text(0.5, 0.628, "microscopic parameters (relaxation times are not among them)",
+ax.text(0.5, 0.628, r"microscopic parameters ($\Delta\omega_e^{2}$, $\tau_e$ and $M_e$ are field-independent)",
         ha="center", fontsize=12.8, style="italic", color="#333333")
-pars = [(r"$X$", "topology", "which transitions\nexist", CB),
+pars = [(r"$X$", "topology", "allowed\ntransitions", CB),
         (r"$\omega_e$", "statics", "transition frequencies,\noffsets", CG),
         (r"$\Delta\omega_e^{2}$", "interaction", "coupling second\nmoments", CR),
         (r"$\tau_e$", "bath memory", "correlation time\nper process", CP),
-        (r"$\beta$", "bias", "temperature,\ndetailed balance", "#8A6D1F")]
-px = np.linspace(0.030, 0.782, 5)
+        (r"$\beta$", "bias", "temperature,\ndetailed balance", "#8A6D1F"),
+        (r"$M_e$", "granularity", "two-state fluctuators\nper transition", "#8E3B72")]
+px = np.linspace(0.030, 0.812, 6)
 for (sym, role, desc, col), x in zip(pars, px):
-    box(x, 0.468, x + 0.188, 0.612, "white", col, lw=2.0)
-    ax.text(x + 0.094, 0.578, sym, ha="center", fontsize=19, color=col)
-    ax.text(x + 0.094, 0.535, role, ha="center", fontsize=12.6,
+    box(x + 0.004, 0.468, x + 0.152, 0.612, "white", col, lw=2.0)
+    ax.text(x + 0.078, 0.578, sym, ha="center", fontsize=19, color=col)
+    ax.text(x + 0.078, 0.535, role, ha="center", fontsize=12.2,
             color=col, fontweight="bold")
-    ax.text(x + 0.094, 0.495, desc, ha="center", fontsize=10.8, color="#333333")
+    ax.text(x + 0.078, 0.495, desc, ha="center", fontsize=10.0, color="#333333")
 
 # ---- control numbers --------------------------------------------------------
 box(0.140, 0.375, 0.860, 0.445, "#F8F1DE", "#8A6D1F", lw=2.0)
@@ -111,8 +116,6 @@ ax.text(0.5, 0.394,
         ha="center", fontsize=13, color="#3B2F0B")
 
 # ---- the fork ---------------------------------------------------------------
-ax.text(0.5, 0.344, "the current sector is either eliminated or retained",
-        ha="center", fontsize=12.2, style="italic", color="#444444")
 arrow((0.42, 0.372), (0.245, 0.300), col="#8A6D1F", rad=0.10)
 arrow((0.58, 0.372), (0.755, 0.300), col=CG, rad=-0.10)
 ax.text(0.222, 0.322, "adiabatic elimination", ha="center", fontsize=13.4,
@@ -145,29 +148,29 @@ ax.text(0.750, 0.268, "FINITE-MEMORY DYNAMICS", ha="center", fontsize=11.2,
 ax.text(0.750, 0.215, "currents evolve with their own\n"
         "memory time and precession", ha="center", fontsize=12.4,
         color="#1F3A20")
-ax.text(0.750, 0.177, "equilibrium exact at every memory depth",
+ax.text(0.750, 0.177, "Gibbs state stationary for all memory times",
         ha="center", fontsize=11.4, color="#1F3A20")
 arrow((0.750, 0.154), (0.750, 0.118), col=CG)
 box(0.530, 0.014, 0.970, 0.112, "white", CG)
-ax.text(0.750, 0.090, "quadratic NOE onset", ha="center", va="center",
+ax.text(0.750, 0.094, "quadratic NOE onset", ha="center", va="center",
         fontsize=11.2, color="#1F3A20")
-ax.text(0.750, 0.066, "low-field oscillation", ha="center", va="center",
+ax.text(0.750, 0.072, r"low-field recovery set by the granularity $M_e$", ha="center", va="center",
         fontsize=11.2, color="#1F3A20")
-ax.text(0.750, 0.042, "causal transport, rigid second moment", ha="center",
+ax.text(0.750, 0.050, "causal transport, rigid second moment", ha="center",
         va="center", fontsize=11.2, color="#1F3A20")
-ax.text(0.750, 0.022, "not expressible by any $T_1$, $T_2$, $D$",
+ax.text(0.750, 0.029, "not described by constant $T_1$, $T_2$, $D$",
         ha="center", va="center", fontsize=10.2, color="#3F6B41",
         style="italic")
 
 fig.savefig("fig_p3_framework.pdf"); fig.savefig("fig_p3_framework.png", dpi=300)
 plt.close(fig)
 
-# ===================== FIGURE 2: validation panels ==========================
+# ===================== FIGURE 4: reductions and predictions =================
 fig, axes = plt.subplots(2, 2, figsize=(13.6, 10.4))
 fig.subplots_adjust(left=0.070, right=0.955, top=0.915, bottom=0.075,
                     wspace=0.26, hspace=0.42)
-fig.suptitle("Transition-current relaxation: verified reductions"
-             " and predictions", fontsize=16, y=0.966)
+fig.suptitle("Transition-current equations: reductions and predictions",
+             fontsize=16, y=0.966)
 
 # ---- (a) rigid-lattice FID: exact Kubo vs closures vs Markov ---------------
 axa = axes[0, 0]
@@ -185,14 +188,28 @@ def tier(Nt):
             M[n, n + 1] = M[n + 1, n] = -1j * D * np.sqrt(n + 1)
     w, V = np.linalg.eig(M); c = np.linalg.inv(V)[:, 0]
     return np.real(np.array([(V @ (np.exp(w * tt) * c))[0] for tt in t]))
-axa.plot(t, kubo, color="#111111", lw=3.2, label="exact (Kubo)")
-axa.plot(t, tier(8), color=CG, lw=2.0, ls=":", label="tier 8")
-axa.plot(t, pair, color=CR, lw=2.2, ls="--", label="pair (tier 1)")
+def tierM(M):
+    Mm = np.zeros((M + 1, M + 1), complex)
+    for n in range(M + 1):
+        Mm[n, n] = -n / tc
+        if n < M:
+            Mm[n, n + 1] = Mm[n + 1, n] = -1j * D * np.sqrt((n + 1) * (1 - n / M))
+    w, V = np.linalg.eig(Mm); c = np.linalg.inv(V)[:, 0]
+    return np.real(np.array([(V @ (np.exp(w * tt) * c))[0] for tt in t]))
+axa.plot(t, kubo, color="#111111", lw=3.2, label="Gaussian: exact (Kubo)")
+axa.plot(t, tier(8), color=CG, lw=2.0, ls=":", label="Gaussian: tier 8")
+axa.plot(t, pair, color=CR, lw=2.2, ls="--", label=r"pair = exact for $M=1$")
+axa.plot(t, tierM(4), color=CP, lw=1.8, label=r"exact for $M=4$")
 axa.plot(t, mark, color=CB, lw=1.8, label="Markov / Bloch")
 axa.set_title(r"(a)  rigid lattice ($\kappa=\Delta\omega\,\tau_c=5$):"
               " dephasing", fontsize=14, pad=9)
 axa.set_xlabel(r"$t\,\Delta\omega$"); axa.set_ylabel("free-induction decay")
-axa.legend(fontsize=11.5, frameon=False, loc="upper right")
+axa.legend(fontsize=11, frameon=False, loc="upper right")
+axa.set_ylim(-0.85, 1.08)
+i_min = int(np.argmin(pair))
+axa.annotate("beating of two lines: exact for\none two-state fluctuator,\nabsent for Gaussian noise",
+             xy=(t[i_min], pair[i_min]), xytext=(4.0, -0.62), fontsize=11, color=CR, va="center",
+             arrowprops=dict(arrowstyle="->", color=CR, lw=1.4))
 
 # ---- (b) positivity domain heatmap ------------------------------------------
 axb = axes[0, 1]
@@ -219,10 +236,12 @@ axb.set_xlabel(r"field scale (multiplier of $\omega_e$)  $\longrightarrow$"
 axb.set_ylabel(r"bath memory $\tau_c$  $\longrightarrow$ longer memory")
 for it in range(len(taus)):
     for io in range(len(oscs)):
-        axb.text(io, it, f"{Zm[it, io]:.2f}", ha="center", va="center",
+        z = Zm[it, io]
+        lab = "0" if abs(z) < 1e-9 else (f"{z:.3f}" if abs(z) < 0.01 else f"{z:.2f}")
+        axb.text(io, it, lab, ha="center", va="center",
                  fontsize=10.5,
                  color="white" if Zm[it, io] < -0.2 else "#222222")
-# outline the certified (nonnegative) region and label the two zones
+# outline the region without negative entries (three-spin benchmark, beta -> 0)
 axb.plot([-0.5, 4.5, 4.5, -0.5, -0.5], [-0.5, -0.5, 2.5, 2.5, -0.5],
          color="#1B7A3A", lw=2.6)
 axb.set_title("(b)  positivity domain of the population closure",
@@ -255,15 +274,29 @@ HN = B4 @ np.diag(Dq4 * tauN / (1 + (Om4 * tauN) ** 2)) @ B4.T
 wm, Vm = np.linalg.eigh(HN); ci = Vm.T @ x0[0:4]
 mSm = np.array([Vm @ (np.exp(-wm * tt) * ci) for tt in ts]) @ ZS / 2
 axc.plot(ts, mSm, color=CB, lw=2.4, label="Markov (Solomon)")
-axc.plot(ts, mS, color=CR, lw=2.4, label="transition-current")
+axc.plot(ts, mS, color=CR, lw=2.4, label="pair (tier 1)")
+import os, runpy
+if not os.path.exists("noe_hierarchy.npz"):
+    runpy.run_path("hierarchy_checks.py", run_name="__main__")
+nh = np.load("noe_hierarchy.npz")
+axc.plot(nh["t"], nh["dich"], color=CP, lw=2.0, ls="--", label="two-state fluctuators, exact")
+axc.plot(nh["t"], nh["gauss"], color="#111111", lw=2.4, label="Gaussian, hierarchy tier 8")
 axc.set_title(r"(c)  NOE transient, slow flip-flop"
               r" ($\kappa_{\mathrm{ZQ}}=1.5$)", fontsize=14, pad=9)
 axc.set_xlabel(r"$t$"); axc.set_ylabel(r"$m_S(t)$ (un-inverted spin)")
-axc.legend(fontsize=11.5, frameon=False, loc="lower right",
+axc.legend(fontsize=10.5, frameon=False, loc="lower right",
            borderaxespad=0.6)
-axc.annotate("quadratic launch", xy=(0.42, -0.022), xytext=(3.9, -0.075),
-             fontsize=11.5, color=CR,
-             arrowprops=dict(arrowstyle="->", color=CR, lw=1.6))
+# inset: the onset. Zero slope, curvature set by the bare second moments,
+# initially opposite in sign to the Solomon slope.
+axci = axc.inset_axes([0.43, 0.63, 0.54, 0.33])
+axci.axhline(0, color="#999999", lw=0.8)
+axci.plot(ts, mSm, color=CB, lw=1.8)
+axci.plot(ts, mS, color=CR, lw=1.8)
+axci.plot(nh["t"], nh["dich"], color=CP, lw=1.4, ls="--")
+axci.plot(nh["t"], nh["gauss"], color="#111111", lw=1.4)
+axci.set_xlim(0, 0.45); axci.set_ylim(-0.05, 0.012)
+axci.set_title("early times: quadratic onset", fontsize=9.5, pad=2)
+axci.tick_params(labelsize=8)
 
 # ---- (d) spatial sector: horns and the causal cone --------------------------
 axd = axes[1, 1]
