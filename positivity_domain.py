@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# Entrywise positivity of the reduced population propagator M(t) = [e^{Gt}]_uu.
-# min entry >= 0 for all t  <=>  positivity for EVERY initial distribution.
-# Scanned over bath memory tau and field scale (Bohr-frequency multiplier).
+
 import numpy as np, itertools
 N=3
 verts=list(itertools.product((0,1),repeat=N)); vidx={v:i for i,v in enumerate(verts)}
