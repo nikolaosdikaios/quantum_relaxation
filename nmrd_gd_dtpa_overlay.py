@@ -1,32 +1,5 @@
 #!/usr/bin/env python3
-"""
-nmrd_gd_dtpa_overlay.py
------------------------
-Qualitative confrontation of the transition-current spectral density with a
-measured 1H NMRD profile. The profile is the Gd-DTPA (4 mM) relaxivity
-dispersion from
 
-    Varga-Szemes A, Kiss P, Rab A, Suranyi P, Lenkey Z, Simor T, Bryant RG,
-    Elgavish GA, "In Vitro Longitudinal Relaxivity Profile of Gd(ABE-DTTA),
-    an Investigational MRI Contrast Agent", PLoS ONE 11(2): e0149260 (2016),
-    doi:10.1371/journal.pone.0149260 (open access, CC-BY; PMC4752229).
-    The Gd-DTPA (4 mM) reference curve is used here.
-
-The points below were read BY HAND from the published figure and are therefore
-approximate. For the manuscript, re-digitize the Gd-DTPA curve with
-WebPlotDigitizer and replace the arrays, then cite the source. This script is a
-template, not a source of record.
-
-Model. In the adiabatic (Markovian) limit the transition-current construction
-gives a relaxation rate that is a sum of Lorentzian spectral densities, one per
-memory channel,
-        r1(f) = c0 + sum_k  a_k / (1 + (2*pi*f*tau_k)^2),
-with a_k proportional to the coupling second moment Delta_omega_k^2 of channel k
-and tau_k its correlation time; c0 is a (nearly) field-independent baseline
-(outer-sphere / high-field contribution). We fit a single channel (one tau) and
-a two-channel version, and compare parameter counts against a per-field
-description.
-"""
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib
