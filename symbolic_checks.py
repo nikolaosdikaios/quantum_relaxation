@@ -1,29 +1,5 @@
 #!/usr/bin/env python3
-"""
-symbolic_checks.py -- independent symbolic verification of the analytic
-results quoted in the manuscript. This is deliberately separate from the
-numerical suite: sympy re-derives each formula from its stated premise, so
-agreement is a check of the derivation and not of the code that implements it.
 
-Checks, in manuscript order:
-  1  adiabatic elimination -> BPP rate and its Kramers-Kronig partner
-  2  Kramers-Kronig consistency of that rate/shift pair
-  3  detailed balance of the two-state rates, and the Curie law
-  4  1/T1 = 2 D_perp^2 Jbar(w0) cosh(...) from the two-state generator
-  5  secular dissipator eigenvalues -> 1/T2 = 1/(2T1) + Dz^2 Jbar(0)
-  6  T2 <= 2 T1 as a positivity statement
-  7  pair equation: exact second moment, and its Markov failure
-  8  pair and Kubo decay agree through O(t^3) and differ at O(t^4) (Theorem 1,
-     N = 1); slow eigenvalue of the pair as a series in kappa^2
-  9  Onsager-Casimir-type parity identity  E G E = G^T
- 10  e^{-f} is annihilated by Q; the reduced generator obeys detailed balance;
-     the spin-flip symmetry of Lemma 1 holds only at beta = 0
- 11  Goldstein-Kac: telegrapher equation and front speed sqrt(D/tau)
- 12  persistent MSD, its short/long-time limits, and D(t=tau)/D = 1-e^-1
- 13  frequency-dependent diffusivity D(w) = D/(1 - i w tau)
- 14  Solomon cross-relaxation sigma = w_DQ - w_ZQ
- 15  Walsh l1-ball positivity bound
-"""
 import sympy as sp
 
 ok = lambda name, cond: print(f"  [{'ok  ' if cond else 'FAIL'}] {name}")
