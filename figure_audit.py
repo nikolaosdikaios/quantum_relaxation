@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-figure_audit.py -- automated legibility audit of the manuscript figures.
-
-Checks, per figure:
-  * every text artist's rendered bounding box against every other one,
-    reporting any pair that overlaps by more than a small tolerance
-  * text that spills outside the axes it belongs to
-  * font sizes below a readability floor
-  * ink bounding box against the canvas, to catch clipping
+""
 
 Run after regenerating figures. Exit status is non-zero if a problem is found.
 """
