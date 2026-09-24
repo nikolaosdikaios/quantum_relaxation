@@ -1,17 +1,5 @@
 #!/usr/bin/env python3
-# fid_fit.py -- the field-series fit (Appendix E of the transition-current paper)
-#
-# Question: are the microscopic parameters identifiable, or hidden fitting
-# constants? Test: generate longitudinal-recovery data at five
-# fields from the effectively exact hierarchy (tier 24) at Kubo number
-# kappa = Delta*tau = 2, add 1 percent noise, then fit
-#   model A (Bloch):   one exponential rate per field      -> 5 parameters
-#   model B: hierarchy truncated at depth N (N = 1 is the transition-current
-#            pair), one global (Delta, tau)              -> 2 parameters
-# and compare pooled RMS and AIC. The kinetic model must win with fewer
-# parameters and recover the generating values, or the parametrization claim
-# fails. Model C, a global two-parameter Bloembergen-Purcell-Pound fit with the
-# same field-independent (Delta, tau), is the fair Markovian baseline.
+
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
