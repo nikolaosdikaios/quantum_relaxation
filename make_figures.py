@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-make_figures_jcp.py -- figures and quoted numbers of the JCP manuscript
+figures and quoted numbers of the JCP manuscript
 "Spin relaxation with bath memory beyond the correlation function".
 
 Figure 1  (a) two-spin level diagram with one current per transition
