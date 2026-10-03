@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-verify_jcp.py -- independent checks of the analytical statements in
+checks of the analytical statements in
 "Spin relaxation with bath memory beyond the correlation function".
 
 Each check prints PASS or FAIL. Requires numpy and scipy. Runtime ~10 s.
