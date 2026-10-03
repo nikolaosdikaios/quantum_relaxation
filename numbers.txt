@@ -1,0 +1,55 @@
+========================================================================
+Free-induction decay, kappa = 5 (Delta_omega = 1, tau_c = 5)
+  Markov reaches half amplitude 8.8 times sooner than Gaussian
+  M = 1: min F = -0.729, zero crossings = 3
+  M = 2: min F = +0.000, zero crossings = 0
+  M = 4: min F = +0.000, zero crossings = 0
+  Gaussian: min F = +0.000, monotonic = True
+  short-time error vs 1-(dw t)^2/2: two-state 3.0e-04, Markov 6.0e-01
+========================================================================
+Short-memory expansion of the slow rate (single channel, no precession)
+  kappa = 0.10: rate*tau = 0.010102, BPP 0.010000, series 0.010102
+  kappa = 0.30: rate*tau = 0.100000, BPP 0.090000, series 0.099886
+  kappa = 0.45: rate*tau = 0.282055, BPP 0.202500, series 0.268521
+========================================================================
+Long-time decay rate of a coherence for M processes, kappa = 0.3 (tau_c = 1)
+      M = 1: rate*tau = 0.100000, closed form 0.100000, rate theory is 10% too low
+      M = 2: rate*tau = 0.094461, closed form 0.094461, rate theory is 5% too low
+      M = 4: rate*tau = 0.092122, closed form 0.092122, rate theory is 2% too low
+   Gaussian: rate*tau = 0.090000, closed form 0.090000, rate theory is 0% too low
+  Eq. (5) (exact for M = 1) overestimates the Gaussian rate by 11%
+========================================================================
+Low-field longitudinal recovery: Delta_omega_e^2 = 0.7 (field rms^2 = 1.4),
+tau_c = 2, omega_L = 0.32 -> kappa = 1.67, omega_L tau_c = 0.64
+  rms fluctuating field / static field = 3.7
+      M = 1: zero crossings = 9, min = -0.4407
+      M = 2: zero crossings = 0, min = +0.0000
+      M = 3: zero crossings = 2, min = -0.0009
+      M = 4: zero crossings = 0, min = +0.0000
+      M = 8: zero crossings = 0, min = +0.0000
+     M = 16: zero crossings = 0, min = +0.0000
+   Gaussian: zero crossings = 0, min = +0.0000
+  Gaussian hierarchy: max|level 16 - level 48| = 1.4e-08
+  M = 1, zero static field: min = -0.507
+  M = 1, static field = rms fluctuating field: min = +0.001
+  Gaussian recovery monotonic: True
+  BPP rate 1.986: max deviation from Gaussian 0.49
+  best single exponential (rate 0.752): max deviation 0.16
+  two-state (= transition-current equations) vs Gaussian: max deviation 0.51
+========================================================================
+Overhauser transient, two spins, one fluctuator per transition, tau_c = 1.5
+  Gaussian hierarchy at total level 8: 48048 variables
+  kappa_ZQ = 1.50, omega_ZQ tau_c = 0.90, omega_DQ tau_c = 15.9
+  Solomon cross-relaxation sigma = w_DQ - w_ZQ = -0.793 (initial slope of m_S = -sigma m_I(0) = -0.793)
+  initial slope of m_S (transition-current eqs) = +0.00
+  initial curvature -(D2_DQ - D2_ZQ) m_I(0) = +5.00; from the generator +5.00
+  Solomon                  extremum -0.367 at t/tau_c = 1.05 (magnitude +0% vs Solomon)
+  transition-current eqs   extremum -0.449 at t/tau_c = 1.49 (magnitude +22% vs Solomon)
+  two-state, exact         extremum -0.430 at t/tau_c = 1.43 (magnitude +17% vs Solomon)
+  Gaussian, tier 8         extremum -0.280 at t/tau_c = 1.37 (magnitude -24% vs Solomon)
+  Gaussian convergence max|tier 8 - tier 6| = 9.7e-04
+  transition-current eqs vs exact two-state: max deviation 0.032
+  early positive excursion of m_S (two-state, exact): max +0.058 at t/tau_c = 0.16; sign change at t/tau_c = 0.26
+  early positive excursion of m_S (Gaussian, tier 8): max +0.050 at t/tau_c = 0.15; sign change at t/tau_c = 0.25
+========================================================================
+figures written: fig1_jcp.pdf/.png, fig2_jcp.pdf/.png

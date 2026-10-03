@@ -1,0 +1,38 @@
+[1] spin-1/2 in a transverse field: Eqs. (3)-(4) vs exact M = 1 dynamics
+  max |m_z(Eqs. 3-4) - m_z(exact two-state)|                      4.64e-12  [PASS]
+[2] short memory (kappa = 0.05): BPP rate, Redfield T2 and dynamic shift
+  relative error of the slow rate vs Eq. (9)                      5.93e-04  [PASS]
+  relative error of the transverse rate vs T1/2 + d2_z J(0)       1.53e-03  [PASS]
+  relative error of the frequency shift vs d2 w tau^2/(1+w^2 tau^2)  3.14e-03  [PASS]
+      (shift of the Larmor frequency: +2.315e-03; formula magnitude 2.308e-03)
+[3] thermal equilibrium, conservation and F at finite temperature (five levels)
+  |d/dt| of the thermal state with zero currents                  0.00e+00  [PASS]
+  max deviation of total probability from 1                       8.88e-16  [PASS]
+  max |dF/dt - Eq. (7)| along the trajectory                      1.11e-16  [PASS]
+  largest increase of F between samples                           0.00e+00  [PASS]
+  distance from thermal populations at t = 60                     1.93e-09  [PASS]
+      (population part of F alone increases somewhere: True)
+[4] Eq. (10): slow decay rate of a coherence and its series
+  max |slow rate - closed form|                                   1.11e-16  [PASS]
+  series vs closed form at kappa = 0.1 (next term 14 kappa^10)    1.44e-09  [PASS]
+      (kappa = 0.3: rate theory 0.090, Eq. (10) 0.100, i.e. 10% too low)
+  max |slow rate of the M ladder - Eq. (13)|, M = 1..8            1.73e-16  [PASS]
+  |Gaussian long-time rate - rate theory| at kappa = 0.3          1.67e-16  [PASS]
+[5] ladder of Eq. (12) vs direct simulation of the 2^M joint states
+  max |ladder - direct simulation|, M = 1..5                      1.73e-15  [PASS]
+  max |kurtosis - (3 - 2/M)|, M = 1..5                            4.44e-16  [PASS]
+  max |Bloch-McConnell total magnetization - Eq. (5)|             2.71e-14  [PASS]
+  max |G_2 - G_1(delta/sqrt 2)^2|                                 1.31e-15  [PASS]
+[6] two spins: Eqs. (3)-(4), short times and the Solomon limit
+  max |m_S(Eqs. 3-4) - m_S(ladder cut at one excitation)|         3.73e-12  [PASS]
+  |slope of m_S at t = 0|                                         0.00e+00  [PASS]
+  |curvature - (-(d2_DQ - d2_ZQ) m_I(0))|, Eq. (15)               1.78e-15  [PASS]
+  |curvature of the exact two-state dynamics - 5|                 8.88e-16  [PASS]
+  |Solomon slope - (-(W2 - W0) m_I(0))|                           0.00e+00  [PASS]
+      (sigma = W2 - W0 = -0.793; W0 : W1 : W2 second moments = 2 : 3 : 12)
+[7] positivity: bound from F, and its failure for a pure state at zero field
+  max |p_a - peq_a| / sqrt(2 F(0) peq_a) - 1 (must not be positive)  0.00e+00  [PASS]
+  |minimum population (zero field, from |aa>) - (-0.20)|          2.79e-03  [PASS]
+      (minimum population -0.197; weakly polarized states stay positive)
+
+ALL CHECKS PASSED
