@@ -9,7 +9,7 @@ Figure 1  (a) two-spin level diagram with one current per transition
 Figure 2  (a) low-field longitudinal recovery of a spin-1/2
           (b) Overhauser transient of a two-spin system
 
-All numbers quoted in the manuscript are printed to stdout. Runtime ~20 s.
+
 Requires numpy, scipy, matplotlib.
 """
 import itertools
